@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.contrib.auth.forms import UserCreationForm
 from .models import Room, Topic
 from .forms import RoomForm
 # Create your views here.
@@ -12,10 +13,11 @@ from .forms import RoomForm
 
 def loginPage(request):
     
+    page = 'login'
     if request.user.is_authenticated:
         return redirect('home')
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
         try:
             user = User.objects.get(username=username)
@@ -28,12 +30,27 @@ def loginPage(request):
             return redirect('home')
         else:
             messages.error(request, 'Invalid username or password')
-    context = {}
+    context = {'page':page}
     return render(request, 'base/login_register.html', context)
 
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+def registerPage(request):
+    form = UserCreationForm()
+    
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit='False')
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Error in registration')
+    return render(request, 'base/login_register.html',{'form':form})
     
 def home(request):
     
@@ -48,8 +65,9 @@ def home(request):
 def room(request, pk):
     
     room = Room.objects.get(id=pk)
+    messages = room.message_set.all()
     
-    context = {'room':room}
+    context = {'room':room, 'messages': messages}
     return render(request, 'base/room.html', context)
 
 @login_required(login_url='/login')
