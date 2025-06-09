@@ -34,5 +34,9 @@ class Message(models.Model):
     updated = models.DateTimeField(auto_now=True) #datetime changes any time you update
     created = models.DateTimeField(auto_now_add=True)#datetime does not change once  datetime created
     
+    class Meta:
+        ordering = ['-updated', '-created'] #desending order because of - sign of(updated and created)
+    
+    
     def __str__(self):
         return self.body[0:50]    

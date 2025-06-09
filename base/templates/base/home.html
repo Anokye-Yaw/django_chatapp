@@ -7,22 +7,13 @@
 <style>
    .home-container{
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 3fr 1fr;
    }
 </style>
 
 <div class="home-container">
    <div>
-      <h3>Browse Topic</h3>
-      <hr>
-      <div>
-        <a href="{% url 'home' %}">All</a>
-     </div>
-      {% for topic in topics %}
-         <div>
-            <a href="{% url 'home' %}?q={{topic.name}}">{{topic}}</a>
-         </div>
-      {% endfor %}
+      {% include 'base/topics_component.html' %}
    </div>
   
   <div>
@@ -36,7 +27,7 @@
            <a href="{% url 'update-room' room.id %}">Edit</a>
            <a href="{% url 'delete-room' room.id %}">Delete</a>
         {% endif %}
-        <span>@{{room.host.username}}</span>
+          <span>@{{room.host.username}}</span>
           <h5>{{room.id}} -- <a href="{%url 'room' room.id %}">{{room.name}}</a></h5>
           <small>{{room.topic.name}}</small>
           <hr>
@@ -44,6 +35,9 @@
         
       {% endfor%}
     </div>  
+  </div>
+  <div> 
+    {% include 'base/activity_component.html' %}
   </div>
   </div>
 
